@@ -1,32 +1,26 @@
 import express from 'express';
-import cors from 'cors';
+
+import { ApolloServer , gql} from 'apollo-server-express';
+import  typeDefs  from './graphql/typeDefs';
 
 
-const  server = express();
+const  app = express();
 
-
-
-server.get('/status', (_, response) => {
-    response.send({
-        status: 'Okay, agora sim!'
-    });
+const server = new ApolloServer({
+    typeDefs: typeDefs,
+   resolvers: {
+       Query: {
+           demands: () => [],
+       },
+   },
 });
 
-const enableCORS = cors({origin: 'http:/localhost:3000'});
-
-server
-.options('/authenticate', enableCORS)
-.post('/authenticate', enableCORS, express.json(), (request, response) => {
-    console.log(
-        'E-Mail'.request.body.email,
-        'Senha' .request.body.password
-        );
-        response.send({
-            Okay:true,
-        });
-});
-
-
+server.applyMiddleware({
+    app,
+    cors: {
+        origin: 'http:/localhost:3000'
+    },
+})
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 8000;
 const HOSTNAME = '127.0.0.1';
